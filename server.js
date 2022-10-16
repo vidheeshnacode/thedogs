@@ -9,8 +9,33 @@ const port = 3011;
 
 app.use(cors({origin: '*'}));
 
-router.get('/', (ctx) => {
+router.get('/', async(ctx) => {
 	ctx.body = 'hello!';
+});
+
+router.get('/random', async(ctx, next) => {	
+	const res = await fetch('https://dog.ceo/api/breeds/image/random')
+		.then( function(response) {
+			if (response.status >= 400) {
+				throw new Error("Bad response from server");
+			}
+			return response.json();
+		})
+		
+	ctx.body = res;
+});
+
+router.get('/image/:name', async(ctx, next) => {
+	console.log(ctx.params.name)
+	const res = await fetch(`https://dog.ceo/api/breed/${ctx.params.name}/images/random`)
+		.then( function(response) {
+			if (response.status >= 400) {
+				throw new Error("Bad response from server");
+			}
+			return response.json();
+		})
+		
+	ctx.body = res;
 });
 
 app.use(async (ctx, next) => {
